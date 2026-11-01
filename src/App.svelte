@@ -1,5 +1,6 @@
 <script lang="ts">
     import { onMount } from "svelte";
+    import { derived } from "svelte/store";
 
     type Tool = { name: string; url: string };
 
@@ -30,17 +31,21 @@
         },
     ];
 
-    let selectedTool = $state<Tool | null>();
+    let inputTool = $state("");
+    let selectedTool = $derived<Tool | undefined>(
+        tools.find((t) => t.name === inputTool),
+    );
 
     onMount(() => {
-        const update = () =>
-            (selectedTool = tools.find(
-                (t) => t.name === window.location.hash.replace(/^#\/?/, ""),
-            ));
+        const update = () => {
+            inputTool = window.location.hash.replace(/^#\/?/, "");
+        };
 
         update();
         window.addEventListener("hashchange", update);
-        return () => window.removeEventListener("hashchange", update);
+        return () => {
+            window.removeEventListener("hashchange", update);
+        };
     });
 </script>
 
@@ -48,7 +53,7 @@
     <div class="tool-picker">
         {#each tools as tool}
             <div class="tool-wrapper">
-                <a class="list-item" href={`/#/${tool.name}`}>
+                <a class="list-item" href={`#/${tool.name}`}>
                     <img
                         class="tool-icon"
                         src={`/icons/${tool.name}.svg`}
