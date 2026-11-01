@@ -1,0 +1,9 @@
+body {
+    margin: 0;
+    background-color: #101015;
+    height: 100dvh;
+}
+
+#app {
+    height: 100%;
+}
